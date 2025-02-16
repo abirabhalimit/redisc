@@ -8,29 +8,29 @@ import "time"
 
 // IsEnabled returns true if the configuration is enabled, indicating that
 // a connection to Redis should be attempted.
-func (c *settings) IsEnabled() bool {
+func (c *Settings) IsEnabled() bool {
 	return c.enabled
 }
 
 // IsDebugging returns true if debugging is enabled in the configuration,
 // which may allow more verbose logging.
-func (c *settings) IsDebugging() bool {
+func (c *Settings) IsDebugging() bool {
 	return c.debugging
 }
 
-func (c *settings) Conn() *connectionSettings {
+func (c *Settings) Conn() *connectionSettings {
 	return c.conn
 }
 
-func (c *settings) Retry() *retrySettings {
+func (c *Settings) Retry() *retrySettings {
 	return c.retry
 }
 
-func (c *settings) Timeout() *timeoutSettings {
+func (c *Settings) Timeout() *timeoutSettings {
 	return c.timeout
 }
 
-func (c *settings) Pool() *poolSettings {
+func (c *Settings) Pool() *poolSettings {
 	return c.pool
 }
 
@@ -40,33 +40,33 @@ func (c *settings) Pool() *poolSettings {
 
 // SetEnable sets the enabled flag in the configuration and returns the updated RConf,
 // allowing for method chaining.
-func (c *settings) SetEnable(value bool) *settings {
+func (c *Settings) SetEnable(value bool) *Settings {
 	c.enabled = value
 	return c
 }
 
 // SetDebug sets the debugging flag in the configuration and returns the updated RConf.
-func (c *settings) SetDebug(value bool) *settings {
+func (c *Settings) SetDebug(value bool) *Settings {
 	c.debugging = value
 	return c
 }
 
-func (c *settings) SetConn(value *connectionSettings) *settings {
+func (c *Settings) SetConn(value *connectionSettings) *Settings {
 	c.conn = value
 	return c
 }
 
-func (c *settings) SetRetry(value *retrySettings) *settings {
+func (c *Settings) SetRetry(value *retrySettings) *Settings {
 	c.retry = value
 	return c
 }
 
-func (c *settings) SetTimeout(value *timeoutSettings) *settings {
+func (c *Settings) SetTimeout(value *timeoutSettings) *Settings {
 	c.timeout = value
 	return c
 }
 
-func (c *settings) SetPool(value *poolSettings) *settings {
+func (c *Settings) SetPool(value *poolSettings) *Settings {
 	c.pool = value
 	return c
 }

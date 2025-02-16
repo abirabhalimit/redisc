@@ -2,7 +2,7 @@ package redisc
 
 import "time"
 
-type settings struct {
+type Settings struct {
 	enabled   bool
 	debugging bool
 	conn      *connectionSettings

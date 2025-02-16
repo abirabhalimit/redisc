@@ -2,8 +2,8 @@ package redisc
 
 import "time"
 
-func NewSettings() *settings {
-	s := &settings{}
+func NewSettings() *Settings {
+	s := &Settings{}
 	s.
 		SetRetry(newRetrySettings()).
 		SetTimeout(newTimeoutSettings()).

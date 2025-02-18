@@ -42,6 +42,10 @@ type connectionSettings struct {
 	// Default address for a local Redis instance.
 	connectionStrings string
 
+	// The username for authentication (Redis 6+ supports usernames).
+	// When your Redis server requires username-based authentication.
+	username string
+
 	// The password for authentication with the Redis server.
 	// Required when your Redis instance is protected by a password.
 	// Default is no password (set if your Redis requires authentication).

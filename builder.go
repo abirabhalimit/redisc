@@ -1,15 +1,65 @@
 package redisc
 
 import (
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis"
+	"github.com/sivaosorg/unify4g"
 	"github.com/sivaosorg/wrapify"
 )
 
 //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 // Getter settings
 //_______________________________________________________________________
+
+func NewSettings() *Settings {
+	s := &Settings{}
+	s.
+		SetRetry(NewRetrySettings()).
+		SetTimeout(NewTimeoutSettings()).
+		SetPool(NewPoolSettings()).
+		SetConn(NewConnSettings())
+	return s
+}
+
+func NewConnSettings() *connectionSettings {
+	c := &connectionSettings{
+		network:  "tcp", // Use TCP for most connections. Use "unix" if you prefer a Unix domain socket.
+		database: 0,     // Connects to the first logical database. Change if your application needs a different DB.
+	}
+	return c
+}
+
+func NewRetrySettings() *retrySettings {
+	r := &retrySettings{
+		maxRetries:      3,                      // Three retry attempts for commands, balancing resilience and responsiveness.
+		minRetryBackoff: 8 * time.Millisecond,   // Provides a short initial delay between retries.
+		maxRetryBackoff: 512 * time.Millisecond, // Caps the maximum delay between retries to prevent long waits.
+	}
+	return r
+}
+
+func NewTimeoutSettings() *timeoutSettings {
+	t := &timeoutSettings{
+		connTimeout:  5 * time.Second, // Allows a moderate wait time when establishing a connection.
+		readTimeout:  3 * time.Second, // Sufficient for most environments to avoid long hangs during operations.
+		writeTimeout: 3 * time.Second, // Sufficient for most environments to avoid long hangs during operations.
+	}
+	return t
+}
+
+func NewPoolSettings() *poolSettings {
+	p := &poolSettings{
+		poolSize:           10,              // Supports moderate concurrency. Increase if your application has a high number of simultaneous requests.
+		minIdleConn:        2,               // Keeps a couple of connections always ready to reduce latency.
+		maxConnAge:         0,               // Connections are recycled indefinitely. Set a non-zero value to force periodic connection renewal.
+		poolTimeout:        4 * time.Second, // Wait up to 4 seconds for a free connection from the pool.
+		idleTimeout:        5 * time.Minute, // Closes idle connections after 5 minutes, freeing up resources.
+		idleCheckFrequency: 1 * time.Minute, // Checks every minute to clear out idle connections.
+	}
+	return p
+}
 
 // IsEnabled returns true if the configuration is enabled, indicating that
 // a connection to Redis should be attempted.
@@ -48,6 +98,30 @@ func (c *Settings) Timeout() *timeoutSettings {
 
 func (c *Settings) Pool() *poolSettings {
 	return c.pool
+}
+
+// redis://<username>:<password>@<host>:<port>
+func (c *Settings) String(safe bool) string {
+	var builder strings.Builder
+	builder.WriteString("redis://")
+	if unify4g.IsEmpty(c.conn.username) && unify4g.IsEmpty(c.conn.password) {
+		builder.WriteString(c.conn.connectionStrings)
+		return builder.String()
+	}
+	if unify4g.IsNotEmpty(c.conn.username) {
+		builder.WriteString(c.conn.username)
+	}
+	if unify4g.IsNotEmpty(c.conn.password) {
+		builder.WriteString(":")
+		if safe {
+			builder.WriteString("*****")
+		} else {
+			builder.WriteString(c.conn.password)
+		}
+		builder.WriteString("@")
+		builder.WriteString(c.conn.connectionStrings)
+	}
+	return builder.String()
 }
 
 //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
@@ -111,21 +185,33 @@ func (c *Settings) SetKeepalive(value bool) *Settings {
 }
 
 func (c *Settings) SetConn(value *connectionSettings) *Settings {
+	if value == nil {
+		value = NewConnSettings()
+	}
 	c.conn = value
 	return c
 }
 
 func (c *Settings) SetRetry(value *retrySettings) *Settings {
+	if value == nil {
+		value = NewRetrySettings()
+	}
 	c.retry = value
 	return c
 }
 
 func (c *Settings) SetTimeout(value *timeoutSettings) *Settings {
+	if value == nil {
+		value = NewTimeoutSettings()
+	}
 	c.timeout = value
 	return c
 }
 
 func (c *Settings) SetPool(value *poolSettings) *Settings {
+	if value == nil {
+		value = NewPoolSettings()
+	}
 	c.pool = value
 	return c
 }
@@ -141,6 +227,11 @@ func (c *connectionSettings) SetNetwork(value string) *connectionSettings {
 
 func (c *connectionSettings) SetConnectionStrings(value string) *connectionSettings {
 	c.connectionStrings = value
+	return c
+}
+
+func (c *connectionSettings) SetUsername(value string) *connectionSettings {
+	c.username = value
 	return c
 }
 

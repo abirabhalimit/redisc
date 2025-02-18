@@ -31,6 +31,8 @@ github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1y
 github.com/onsi/gomega v1.36.2 h1:koNYke6TVk6ZmnyHrCXba/T/MoLBXFjeC1PtvYgw0A8=
 github.com/onsi/gomega v1.36.2/go.mod h1:DdwyADRjrc825LhMEkD76cHR5+pUnjhUN8GlHlRPHzY=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/sivaosorg/loggy v0.0.1 h1:pWd55wcSH6bn6I1ETkFmaCwv+fE5yBSo68KNf+Vg3Lg=
+github.com/sivaosorg/loggy v0.0.1/go.mod h1:gI3lAgO8b8aukpUymS0DKMz9/ccVfwc3IN2C/noHYN8=
 github.com/sivaosorg/unify4g v0.0.2 h1:5UVUHqp4tJnqgiZaFs5iSxdCab5hTB9Jx3HQNMyZZSY=
 github.com/sivaosorg/unify4g v0.0.2/go.mod h1:rkCukiHwnpNmbu/sO5VCM3OM5wm1dfPDrLqtwbmgLgQ=
 github.com/sivaosorg/wrapify v0.0.3 h1:4Lgg1jKuacMsCFjR7TUmPDftnO+MnKkw4ePkIBPkJIo=

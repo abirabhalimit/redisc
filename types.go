@@ -1,14 +1,34 @@
 package redisc
 
-import "time"
+import (
+	"sync"
+	"time"
+
+	"github.com/go-redis/redis"
+	"github.com/sivaosorg/wrapify"
+)
 
 type Settings struct {
 	enabled   bool
 	debugging bool
-	conn      *connectionSettings
-	retry     *retrySettings
-	timeout   *timeoutSettings
-	pool      *poolSettings
+
+	// Defines the frequency at which the connection is pinged.
+	// This interval is used by the keepalive mechanism to periodically check the health of the
+	// database connection. If a ping fails, a reconnection attempt may be triggered.
+	pingInterval time.Duration
+
+	// Indicates whether automatic keepalive is enabled for the Redis connection.
+	// When set to true, a background process will periodically ping the database and attempt
+	// to reconnect if the connection is lost.
+	keepalive bool
+
+	conn *connectionSettings
+
+	retry *retrySettings
+
+	timeout *timeoutSettings
+
+	pool *poolSettings
 }
 
 type connectionSettings struct {
@@ -93,4 +113,29 @@ type poolSettings struct {
 	// How often the pool checks for idle connections to close.
 	// Balance between timely cleanup and the overhead of checks.
 	idleCheckFrequency time.Duration
+}
+
+type Datasource struct {
+	// A read-write mutex that ensures safe concurrent access to the Datasource fields.
+	mu sync.RWMutex
+	// An instance of Settings containing all the configuration parameters for the Redis connection.
+	conf Settings
+	// A wrapify.R instance that holds the current connection status, error messages, and debugging information.
+	wrap wrapify.R
+	// A pointer to an redis.Client object representing the active connection to the Redis database.
+	conn *redis.Client
+	// A callback function that is invoked asynchronously when there is a change in connection status,
+	//  such as when the connection is lost, re-established, or its health is updated.
+	on func(response wrapify.R)
+	// onReplica is a callback function that is invoked asynchronously to handle events related to replica connections.
+	// When the status of a replica datasource changes (e.g., during failover, reconnection, or health updates),
+	// this function is triggered with the current status (encapsulated in wrapify.R) and a pointer to the Datasource
+	// representing the replica connection. This allows external components to implement replica-specific logic
+	// for tasks such as load balancing, monitoring, or failover handling independently of the primary connection.
+	onReplica func(response wrapify.R, replicator *Datasource)
+	// notifier is an optional callback function used to propagate notifications for significant datasource events.
+	// It is invoked with the current status (encapsulated in wrapify.R) whenever notable events occur,
+	// such as reconnection attempts, keepalive signals, or other diagnostic updates.
+	// This allows external components to receive and handle these notifications independently of the primary connection status callback.
+	notifier func(response wrapify.R)
 }

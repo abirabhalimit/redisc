@@ -146,43 +146,51 @@ func (d *Datasource) keepalive() {
 		for range ticker.C {
 			ps := time.Now()
 			if err := d.ping(); err != nil {
+				duration := time.Since(ps)
 				response = wrapify.WrapInternalServerError("The redis server is currently unreachable. Initiating reconnection process...", nil).
 					WithDebuggingKV("redis_conn_str", d.conf.String(true)).
-					WithDebuggingKV("ping_executed_in", time.Since(ps).String()).
+					WithDebuggingKV("ping_executed_in", duration.String()).
 					WithDebuggingKV("ping_start_at", ps.Format(defaultTimeFormat)).
+					WithDebuggingKV("ping_end_at", ps.Add(duration).Format(defaultTimeFormat)).
 					WithErrSck(err).
 					WithHeader(wrapify.InternalServerError).
 					Reply()
 
 				ps = time.Now()
 				if err := d.reconnect(); err != nil {
+					duration := time.Since(ps)
 					reconnectAttempt++ // Increment reconnect count on failure reconnect
 					response = wrapify.WrapInternalServerError("The redis server remains unreachable. The reconnection attempt has failed", nil).
 						WithDebuggingKV("redis_conn_str", d.conf.String(true)).
-						WithDebuggingKV("reconnect_executed_in", time.Since(ps).String()).
+						WithDebuggingKV("reconnect_executed_in", duration.String()).
 						WithDebuggingKV("reconnect_start_at", ps.Format(defaultTimeFormat)).
+						WithDebuggingKV("reconnect_end_at", ps.Add(duration).Format(defaultTimeFormat)).
 						WithDebuggingKV("reconnect_attempt", reconnectAttempt).
 						WithErrSck(err).
 						WithHeader(wrapify.InternalServerError).
 						Reply()
 				} else {
+					duration := time.Since(ps)
 					reconnectAttempt = 0
 					response = wrapify.New().
 						WithStatusCode(http.StatusOK).
 						WithDebuggingKV("redis_conn_str", d.conf.String(true)).
-						WithDebuggingKV("reconnect_executed_in", time.Since(ps).String()).
+						WithDebuggingKV("reconnect_executed_in", duration.String()).
 						WithDebuggingKV("reconnect_start_at", ps.Format(defaultTimeFormat)).
+						WithDebuggingKV("reconnect_end_at", ps.Add(duration).Format(defaultTimeFormat)).
 						WithMessagef("The connection to the redis server has been successfully re-established: '%s'", d.conf.String(true)).
 						WithHeader(wrapify.OK).
 						Reply()
 				}
 			} else {
+				duration := time.Since(ps)
 				reconnectAttempt = 0
 				response = wrapify.New().
 					WithStatusCode(http.StatusOK).
 					WithDebuggingKV("redis_conn_str", d.conf.String(true)).
 					WithDebuggingKV("ping_executed_in", time.Since(ps).String()).
 					WithDebuggingKV("ping_start_at", ps.Format(defaultTimeFormat)).
+					WithDebuggingKV("ping_end_at", ps.Add(duration).Format(defaultTimeFormat)).
 					WithMessagef("The connection to the redis server has been successfully established: '%s'", d.conf.String(true)).
 					WithHeader(wrapify.OK).
 					Reply()

